@@ -84,7 +84,8 @@ class Table:
         return res['Item']
 
     def find(self):
-        return self.src.scan(
+        res = self.src.scan(
             IndexName="COGNITO_ID-REPORT_ID-index",
             FilterExpression=Attr(self.column_cognitoId).eq(self.cognitoId) & Attr(self.column_reportId).eq(self.reportId)
         )
+        return res['Items']
