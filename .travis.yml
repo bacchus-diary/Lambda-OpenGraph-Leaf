@@ -1,0 +1,19 @@
+branches:
+  except:
+    - /^[0-9]/
+
+env:
+  global:
+    - FUNC_NAME='BacchusDiary-Report'
+    - ALIAS=$(if [ "$TRAVIS_BRANCH" == 'master' ]; then echo Production; else echo Beta; fi)
+
+install:
+  - sudo easy_install pip && sudo pip install awscli
+
+script:
+  - PRE=$(aws lambda get-alias --function-name $FUNC_NAME --name $ALIAS | ruby -e 'require "json"; puts JSON.load($stdin)["FunctionVersion"]')
+  - zip main.zip main.py
+  - aws lambda update-function-code --function-name $FUNC_NAME --zip-file fileb://main.zip --publish | tee result
+  - VERSION=$(ruby -e 'require "json"; puts JSON.load(open("result"))["Version"]')
+  - aws lambda update-alias --function-name $FUNC_NAME --name $ALIAS --function-version $VERSION
+  - aws lambda update-alias --function-name $FUNC_NAME --name "${ALIAS}_pre" --function-version $PRE
