@@ -10,7 +10,7 @@ from boto3.dynamodb.conditions import Key, Attr
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-logger.info("Version 0.0.1")
+logger.info("Version 1.0.0")
 
 def lambda_handler(event, context):
     logger.info("Event: " + str(event))
